@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Militia Classic Key</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --accent:#0b84ff;
+      --muted:#6b7280;
+      --shadow:0 6px 12px rgba(15,23,42,0.06);
+      --radius:12px;
+      font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    }
+    body {
+      margin:0;
+      background:var(--bg);
+      color:#111827;
+      padding:28px 16px;
+      display:flex;
+      justify-content:center;
+    }
+    .container {
+      max-width:480px;
+      width:100%;
+    }
+    header {
+      text-align:center;
+      margin-bottom:24px;
+    }
+    h1 {
+      font-size:28px;
+      margin:0;
+      font-weight:700;
+    }
+    .updated {
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .card {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:var(--card);
+      padding:12px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(15,23,42,0.03);
+    }
+    .left {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .avatar {
+      width:72px;
+      height:72px;
+      flex:0 0 72px;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:inset 0 -6px 12px rgba(0,0,0,0.05);
+    }
+    .avatar img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .meta {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .title {
+      font-weight:600;
+      font-size:16px;
+    }
+    .key {
+      color:var(--muted);
+      font-size:13px;
+    }
+    .copy-btn {
+      background:var(--accent);
+      color:white;
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:0 6px 10px rgba(11,132,255,0.14);
+    }
+    .copy-btn:active { transform:translateY(1px); }
+    .toast {
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      background:#111827;
+      color:white;
+      padding:10px 14px;
+      border-radius:10px;
+      opacity:0;
+      transform:translateY(8px);
+      transition:all .24s ease;
+      pointer-events:none;
+    }
+    .toast.show {
+      opacity:1;
+      transform:translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Mini Militia Classic Key</h1>
+      <div class="updated">Updated at <span id="ts">--</span></div>
+    </header>
+
+    <div class="card">
+      <div class="left">
+        <div class="avatar">
+          <!-- ✅ Mini Militia Classic Image -->
+          <img src="https://i.imgur.com/ty4uG3F.png" alt="Mini Militia Classic">
+        </div>
+        <div class="meta">
+          <div class="title">Mini Militia Classic</div>
+          <div class="key">Key: <span id="key">---</span></div>
+        </div>
+      </div>
+      <button class="copy-btn" onclick="copyKey()">Copy Key</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Copied!</div>
+
+  <script>
+    // === Configuration ===
+    const KEY_STORAGE = "mini_militia_classic_key_v1";
+    const DATE_STORAGE = "mini_militia_classic_key_date_v1";
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+    // === Generate Random Key ===
+    function randomKey(len = 20) {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let out = "";
+      for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+      return out.slice(0, 5) + "-" + out.slice(5, 10) + "-" + out.slice(10, 15) + out.slice(15);
+    }
+
+    // === Get or Refresh Key ===
+    function getKey() {
+      const savedKey = localStorage.getItem(KEY_STORAGE);
+      const savedDate = localStorage.getItem(DATE_STORAGE);
+
+      if (savedKey && savedDate) {
+        const date = new Date(parseInt(savedDate, 10));
+        const now = new Date();
+
+        if (now - date < THREE_DAYS_MS) {
+          return savedKey; // still valid
+        }
+      }
+
+      // expired or missing -> new key
+      const newKey = randomKey();
+      localStorage.setItem(KEY_STORAGE, newKey);
+      localStorage.setItem(DATE_STORAGE, Date.now().toString());
+      return newKey;
+    }
+
+    // === Copy to Clipboard ===
+    async function copyKey() {
+      const key = document.getElementById("key").textContent;
+      try {
+        await navigator.clipboard.writeText(key);
+        showToast("Copied: " + key);
+      } catch (e) {
+        fallbackCopyTextToClipboard(key);
+        showToast("Copied (fallback)");
+      }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      const t = document.createElement("textarea");
+      t.value = text;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand("copy");
+      document.body.removeChild(t);
+    }
+
+    // === Toast Message ===
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    // === Init ===
+    function init() {
+      const key = getKey();
+      document.getElementById("key").textContent = key;
+      document.getElementById("ts").textContent = new Date().toLocaleString();
+    }
+
+    init();
+  </script>
+</body>
+</html>
