@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stick War Legacy – 3-Day Key Generator</title>
+
+<style>
+    body {
+        margin:0;
+        background:#eef3ff;
+        font-family:Arial, sans-serif;
+    }
+    .page {
+        display:flex;
+        justify-content:center;
+        padding:35px 15px;
+    }
+    .card {
+        width:100%;
+        max-width:440px;
+        background:white;
+        border-radius:20px;
+        padding:30px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    }
+    .top-icon {
+        width:60px;height:60px;
+        background:linear-gradient(180deg,#3b82f6,#8b5cf6);
+        display:flex;align-items:center;justify-content:center;
+        border-radius:14px;
+        margin:0 auto 10px;
+    }
+    .top-icon svg {
+        width:30px;height:30px;color:white;
+    }
+    h1 {
+        text-align:center;
+        margin:10px 0 2px;
+        font-size:22px;
+    }
+    .subtitle {
+        text-align:center;
+        color:#666;
+        margin-bottom:20px;
+    }
+    .avatar {
+        width:160px;height:160px;
+        margin:0 auto 20px;
+        border-radius:16px;
+        overflow:hidden;
+        box-shadow:0 8px 18px rgba(0,0,0,0.1);
+    }
+    .avatar img {
+        width:100%;height:100%;object-fit:cover;
+    }
+    .label { font-weight:600; margin-bottom:8px; }
+    .key-box {
+        background:#f3f6fa;
+        padding:15px;
+        border-radius:12px;
+        font-family:monospace;
+        word-break:break-all;
+        border:1px solid #ddd;
+    }
+    .info {
+        margin-top:15px;
+        padding:12px;
+        background:#fafcff;
+        border-radius:12px;
+        border:1px solid #eee;
+        font-size:14px;
+        display:flex;
+        gap:10px;
+    }
+    .copy-btn {
+        margin-top:20px;
+        width:100%;
+        padding:15px;
+        border:none;
+        background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+        color:white;
+        font-size:16px;
+        font-weight:bold;
+        border-radius:12px;
+        cursor:pointer;
+        display:flex;justify-content:center;align-items:center;gap:8px;
+    }
+    #toast {
+        position:fixed;bottom:25px;left:50%;
+        transform:translateX(-50%);
+        background:#111;color:white;
+        padding:10px 18px;border-radius:8px;
+        opacity:0;transition:0.2s;
+    }
+</style>
+</head>
+
+<body>
+<div class="page">
+<div class="card">
+
+    <div class="top-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
+            <path d="M21 2l-7.5 7.5"></path>
+            <circle cx="8" cy="13" r="4" fill="white"></circle>
+        </svg>
+    </div>
+
+    <h1>Stick War Legacy 32bit Key</h1>
+    <div class="subtitle">Auto-generated every 3 days</div>
+
+    <div class="avatar">
+        <img src="https://i.ibb.co/N22FsVQN/app-icon.png">
+    </div>
+
+    <div class="label">Your 3-Day Encryption Key</div>
+    <div id="keyBox" class="key-box">Loading...</div>
+
+    <div class="info">
+        <span>🔒</span> 
+        This key is refreshed automatically every 3 days. Keep it safe.
+    </div>
+
+    <button class="copy-btn" id="copyKey">
+        📋 Copy Key
+    </button>
+
+</div>
+</div>
+
+<div id="toast">Copied!</div>
+
+<script>
+    function generateKey(length=20) {
+        let chars = "abcdef0123456789";
+        let out = "";
+        for (let i=0;i<length;i++) out += chars[Math.floor(Math.random()*chars.length)];
+        return out;
+    }
+
+    function loadKey(){
+        let data = localStorage.getItem("mm_key_data");
+        let now = Date.now();
+        let threeDays = 3 * 24 * 60 * 60 * 1000;
+
+        if(data){
+            let obj = JSON.parse(data);
+            if(now - obj.timestamp < threeDays){
+                return obj.key;
+            }
+        }
+
+        let newKey = generateKey();
+        localStorage.setItem("mm_key_data", JSON.stringify({
+            key: newKey,
+            timestamp: now
+        }));
+        return newKey;
+    }
+
+    let key = loadKey();
+    document.getElementById("keyBox").textContent = key;
+
+    document.getElementById("copyKey").onclick = () => {
+        navigator.clipboard.writeText(key);
+        let t = document.getElementById("toast");
+        t.style.opacity = 1;
+        setTimeout(()=> t.style.opacity = 0, 1500);
+    };
+</script>
+
+</body>
+</html>
